@@ -17,12 +17,16 @@
     <string name="no_message">ARTICLE: Thanks</string>
     <string name="question_article">LIKE THE ARTICLE?</string>
 
-    <!-- Text for the button in FragmentExample2. -->
-    <string name="open">Open</string>
-    <string name="close">Close</string>
+
+    <!-- Text for the challenge. -->
+    <string name="yes_message2">SONG: Like</string>
+    <string name="no_message2">SONG: Thanks</string>
+    <string name="question_the_song">LIKE THE SONG?</string>
+    <string name="my_rating">My Rating: </string>
+
 
     <!-- Text for the exception message in FragmentCommunicate. -->
     <string name="exception_message">must implement OnFragmentInteractionListener</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="like_the_song">Like the song?</string>
 </resources>
