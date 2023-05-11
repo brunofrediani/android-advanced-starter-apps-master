@@ -2,6 +2,8 @@ package com.example.speedtestapp;
 
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.TextView;
 
 import androidx.loader.content.AsyncTaskLoader;
@@ -16,11 +18,15 @@ import java.net.URLConnection;
 public class DownloadAndMeasureSpeed extends AsyncTask<TextView,Void,Double> {
 
     private TextView textView;
+    private boolean running;
+    private Handler handler;
 
 
     @Override
     protected Double doInBackground(TextView... textViews) {
     textView = textViews[0];
+    running = true;
+    handler = new Handler(Looper.getMainLooper());
     try {
         URL url = new URL("https://speed.hetzner.de/100MB.bin");
         URLConnection connection = url.openConnection();
@@ -37,17 +43,27 @@ public class DownloadAndMeasureSpeed extends AsyncTask<TextView,Void,Double> {
         FileOutputStream out = new FileOutputStream(outputFile);
         byte[]data = new byte[1024];
         int count;
-        while ((count = in.read(data,0,1024))!= -1){
+        long totalBytesRead = 0;
+        long lastUpdateTime = startTime;
+
+        while ((count = in.read(data,0,1024))!= -1 && running){
             out.write(data,0,count);
+            totalBytesRead +=count;
+            long currentTime = System.currentTimeMillis();
+                if (currentTime - lastUpdateTime >= 1000){
+                    double downloadSpeedMpbs = (double) totalBytesRead / 1024 / 1024 * 8 /(currentTime - startTime) * 1000;
+                    handler.post(()-> textView.setText("Download speed: " + downloadSpeedMpbs + " Mbps"));
+                    lastUpdateTime = currentTime;
+            }
         }
         out.close();
         in.close();
 
-        long endTime = System.currentTimeMillis();
+      /*  long endTime = System.currentTimeMillis();
         double fileSizeMB = (double) connection.getContentLength() / (1024 * 1024);
         double downloadTimeSeconds = (endTime - startTime) / 1000.0;
         double downloadSpeedMpbs = fileSizeMB / downloadTimeSeconds * 8.0;
-        return downloadSpeedMpbs;
+        return downloadSpeedMpbs;*/
     } catch (IOException e){
         e.printStackTrace();
     }
