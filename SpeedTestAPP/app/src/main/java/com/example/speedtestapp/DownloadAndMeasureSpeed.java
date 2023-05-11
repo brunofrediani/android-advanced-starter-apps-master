@@ -1,11 +1,13 @@
 package com.example.speedtestapp;
 
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.widget.TextView;
 
 import androidx.loader.content.AsyncTaskLoader;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -24,7 +26,15 @@ public class DownloadAndMeasureSpeed extends AsyncTask<TextView,Void,Double> {
         URLConnection connection = url.openConnection();
         long startTime = System.currentTimeMillis();
         BufferedInputStream in = new BufferedInputStream(connection.getInputStream());
-        FileOutputStream out = new FileOutputStream("100MB.bin");
+
+        File downloadDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        if (!downloadDirectory.exists()){
+            downloadDirectory.mkdir();
+        }
+        String fileName = "100MB.bin";
+        File outputFile = new File(downloadDirectory,fileName);
+
+        FileOutputStream out = new FileOutputStream(outputFile);
         byte[]data = new byte[1024];
         int count;
         while ((count = in.read(data,0,1024))!= -1){
@@ -34,8 +44,8 @@ public class DownloadAndMeasureSpeed extends AsyncTask<TextView,Void,Double> {
         in.close();
 
         long endTime = System.currentTimeMillis();
-        double fileSizeMB = (double) connection.getContentLength()/(1024 * 1024);
-        double downloadTimeSeconds = (endTime - startTime) /1000.0;
+        double fileSizeMB = (double) connection.getContentLength() / (1024 * 1024);
+        double downloadTimeSeconds = (endTime - startTime) / 1000.0;
         double downloadSpeedMpbs = fileSizeMB / downloadTimeSeconds * 8.0;
         return downloadSpeedMpbs;
     } catch (IOException e){
