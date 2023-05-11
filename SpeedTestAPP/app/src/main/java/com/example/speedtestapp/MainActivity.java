@@ -84,11 +84,12 @@ public class MainActivity extends AppCompatActivity {
 
             lastSpeed =  downloadSpeedMbps;
             downloadSpeedTxt.setText(String.format("%.2f Mbps", downloadSpeedMbps));
-        }
+            }
 
         @Override
         protected void onPostExecute(Long result) {
-            downloadSpeedTxt.setText(String.format("Last speed: %.2f Mbps", lastSpeed));
+            double lastSpeedMbps = lastSpeed / 1000000.0;
+            downloadSpeedTxt.setText(String.format("Last speed: %.2f Mbps", lastSpeedMbps));
         }
     }
 
